@@ -1,0 +1,44 @@
+{
+  "name": "appium-installer",
+  "version": "1.0.0",
+  "description": "CLI to installed appium 2.0",
+  "main": "index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build",
+    "prettier": "prettier 'src/**/*.ts' --write --single-quote"
+  },
+  "dependencies": {
+    "@inquirer/checkbox": "^0.0.30-alpha.0",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.4",
+    "inquirer-fuzzy-path": "^2.3.0",
+    "inquirer-search-list": "^1.2.6",
+    "ora": "^6.1.2",
+    "shelljs": "^0.8.5"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.1",
+    "@types/inquirer-fuzzy-path": "^2.3.5",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.3"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=16"
+  },
+  "bin": {
+    "appium-installer": "./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AppiumTestDistribution/appium-installer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AppiumTestDistribution/appium-installer/issues"
+  },
+  "homepage": "https://github.com/AppiumTestDistribution/appium-installer#readme"
+}
