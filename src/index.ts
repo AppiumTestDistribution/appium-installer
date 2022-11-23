@@ -16,35 +16,37 @@ async function main() {
       name: 'server',
     },
   ]);
-  function skipServerInstall() {
+  function skipInstall(value: string) {
     ui.log.write('\n');
-    ui.log.write(chalk.yellow('Appium Server installation skipped'));
-  }
-
-  function skipPluginInstall() {
+    ui.log.write(chalk.yellow(value));
     ui.log.write('\n');
-    ui.log.write(chalk.yellow('Appium Plugin installation skipped'));
   }
-  server === true
+    server === true
     ? await installAppiumServer()
-    :  skipServerInstall();
+    :  skipInstall('Appium Server installation skipped');
   ui.log.write('\n');
-  const driverChoices = await getDriver();
-  const requiredDriverToInstall = await inquirer.prompt([
+
+  const { drivers } = await inquirer.prompt([
     {
-      type: 'checkbox',
-      message: 'Select Drivers to install',
+      type: 'confirm',
+      message: 'Do you want to install appium drivers',
       name: 'drivers',
-      choices: driverChoices,
-      validate(answer) {
-        if (answer.length < 1) {
-          return 'Choose your driver';
-        }
-        return true;
-      },
     },
   ]);
-  await installDrivers(requiredDriverToInstall.drivers);
+
+  async function installRequiredDrivers() {
+    const driverChoices = await getDriver();
+    const requiredDriverToInstall = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        message: 'Select Drivers to install',
+        name: 'drivers',
+        choices: driverChoices,
+      },
+    ]);
+    await installDrivers(requiredDriverToInstall.drivers);
+  }
+  drivers === true ? await installRequiredDrivers() : skipInstall('Appium Driver installation skipped');
   const { plugin } = await inquirer.prompt([
     {
       type: 'confirm',
@@ -54,7 +56,7 @@ async function main() {
   ]);
   plugin === true
     ? await installPlugin()
-    : skipPluginInstall();
+    : skipInstall('Appium Plugin installation skipped');
   ui.log.write('\n');
 
   ui.log.write('\n');
