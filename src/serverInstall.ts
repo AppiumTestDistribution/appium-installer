@@ -22,6 +22,7 @@ export async function installAppiumServer() {
   } finally {
     spinner.stop();
   }
+  ui.log.write('\n');
 }
 
 function newLine() {
@@ -34,7 +35,7 @@ export async function getDriver() {
   const spinner = ora('Fetching available official drivers').start();
 
   try {
-    const { stdout } = await shelljs.exec('appium driver list --json', { silent: true });
+    const { stdout } = await run('appium driver list --json');
     Object.keys(JSON.parse(stdout)).forEach((value) => drivers.push({ name: value }));
     spinner.succeed();
     return drivers;
@@ -61,6 +62,12 @@ export async function installPlugin() {
       message: 'Select Plugins to install',
       name: 'plugins',
       choices: plugins,
+      validate(answer) {
+        if (answer.length < 1) {
+          return 'You must choose at least one plugin.';
+        }
+        return true;
+      },
     },
   ]);
   const { source } = await inquirer.prompt([
@@ -71,23 +78,38 @@ export async function installPlugin() {
       choices: ['npm', 'github', 'git', 'local'],
     }
   ]);
-  const { pluginPath } = await inquirer
-      .prompt([
-        {
-          name: 'pluginPath',
-          message: 'Source of plugin',
-        },
-      ])
+  let pluginPath: string;
+  if (source!= 'npm') {
+    const path = await inquirer
+        .prompt([
+          {
+            name: 'pluginPath',
+            message: 'Source of plugin',
+          },
+        ])
+    pluginPath = path.pluginPath;
+  }
+
   const installedPlugins = await shelljs.exec('appium plugin list --installed --json', { silent: true });
-  const pluginNamesInstalled: any = Object.values(JSON.parse(installedPlugins.stdout)).map((p: any) => p.pkgName);
+  let pluginNamesInstalled = Object.entries(JSON.parse(installedPlugins.stdout));
+  let pluginInformation: { pluginName: string; plugin: any; installed: any; }[] = [];
+  pluginNamesInstalled.map( ([key, val]) => {
+    // @ts-ignore
+    pluginInformation.push({pluginName: key, plugin: val.pkgName, installed: val.installed});
+  });
   await Promise.all(
       requiredPlugins.plugins.map(async (pluginName: string) => {
-        ui.log.write('Checking if plugin is already installed');
-        if(pluginNamesInstalled.includes(pluginName)) {
-            ui.log.write(chalk.yellow(`💾 💾 Plugin ${pluginName} already installed`));
+        newLine();
+        const pluginExists = pluginInformation.find(name => name.plugin === pluginName);
+        if(pluginExists != undefined) {
+            ui.log.write(chalk.yellow(`ℹ️  Plugin ${pluginName} already installed`));
+            newLine();
+            ui.log.write(chalk.yellow(`ℹ️  Checking if any update available for plugin ${pluginName}`));
+            newLine();
+            await shelljs.exec(`appium plugin update ${pluginExists.pluginName}`);
             return;
           } else {
-          if (pluginPath === 'npm') {
+          if (!pluginPath) {
             await shelljs.exec(`appium plugin install --source ${source} ${pluginName}`);
           } else {
             await shelljs.exec(`appium plugin install --source ${source} --package ${pluginPath} plugin`);

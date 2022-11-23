@@ -7,8 +7,8 @@ import chalk from 'chalk';
 
 async function main() {
   ui.log.write(`\n👋 Hello, Appium user ✨\n\n`);
-  ui.log.write(`‼️  BEFORE YOU START:\n`);
-  ui.log.write(`🐍 Make sure you have node 16 and above`);
+  ui.log.write(`\n\n‼️  BEFORE YOU START:\n\n`);
+  ui.log.write(`🐍 Make sure you have node 16 and above\n\n`);
   const { server } = await inquirer.prompt([
     {
       type: 'confirm',
@@ -24,7 +24,6 @@ async function main() {
     server === true
     ? await installAppiumServer()
     :  skipInstall('Appium Server installation skipped');
-  ui.log.write('\n');
 
   const { drivers } = await inquirer.prompt([
     {
@@ -45,6 +44,7 @@ async function main() {
       },
     ]);
     await installDrivers(requiredDriverToInstall.drivers);
+    ui.log.write('\n');
   }
   drivers === true ? await installRequiredDrivers() : skipInstall('Appium Driver installation skipped');
   const { plugin } = await inquirer.prompt([

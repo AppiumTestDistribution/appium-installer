@@ -16,7 +16,8 @@
     "inquirer-fuzzy-path": "^2.3.0",
     "inquirer-search-list": "^1.2.6",
     "ora": "^6.1.2",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "appium-doctor": "^1.16.2"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.1",
