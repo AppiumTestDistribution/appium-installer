@@ -1,6 +1,6 @@
 {
   "name": "appium-installer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI to installed appium 2.0",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
@@ -11,17 +11,20 @@
   },
   "dependencies": {
     "@inquirer/checkbox": "^0.0.30-alpha.0",
+    "appium-doctor": "^1.16.2",
     "chalk": "^4.1.2",
     "inquirer": "^8.2.4",
     "inquirer-fuzzy-path": "^2.3.0",
     "inquirer-search-list": "^1.2.6",
+    "lodash": "^4.17.21",
     "ora": "^6.1.2",
-    "shelljs": "^0.8.5",
-    "appium-doctor": "^1.16.2"
+    "pkg-dir": "^7.0.0",
+    "shelljs": "^0.8.5"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.1",
     "@types/inquirer-fuzzy-path": "^2.3.5",
+    "@types/lodash": "^4.14.189",
     "prettier": "^2.7.1",
     "typescript": "^4.8.3"
   },

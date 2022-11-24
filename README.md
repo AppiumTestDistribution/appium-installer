@@ -11,12 +11,18 @@ CLI to installed appium 2.0
 
 ## Installation 
 
-````
-npm install && npm run build && npm link && appium-installer
-````
+```
+npm install -g appium-installer
+```
 
-Run command 
+Run command
 
 ```
 appium-installer
 ```
+
+## To Install local
+````
+npm install && npm run build && npm link && appium-installer
+````
+

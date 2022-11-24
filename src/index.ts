@@ -2,7 +2,7 @@
 import inquirer from 'inquirer';
 
 const ui = new inquirer.ui.BottomBar();
-import { installAppiumServer, getDriver, installDrivers, installPlugin } from './serverInstall.js';
+import {installAppiumServer, getDriver, installDrivers, installPlugin, runAppiumDoctor} from './serverInstall.js';
 import chalk from 'chalk';
 
 async function main() {
@@ -57,6 +57,18 @@ async function main() {
   plugin === true
     ? await installPlugin()
     : skipInstall('Appium Plugin installation skipped');
+  ui.log.write('\n');
+
+  const { doctor } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      message: 'Do you want to run appium-doctor',
+      name: 'doctor',
+    },
+  ]);
+  doctor === true
+      ? await runAppiumDoctor()
+      : skipInstall('Appium Doctor check skipped');
   ui.log.write('\n');
 
   ui.log.write('\n');

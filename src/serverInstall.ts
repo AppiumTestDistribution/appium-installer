@@ -2,12 +2,14 @@ import inquirer from 'inquirer';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 const run = promisify(exec);
+
 import ora, { Ora } from 'ora';
 import { plugins } from './plugin.js';
 const ui = new inquirer.ui.BottomBar();
 // @ts-ignore
 import shelljs from 'shelljs';
 import chalk from 'chalk';
+import { packageDirectory } from 'pkg-dir';
 
 export async function installAppiumServer() {
   newLine();
@@ -53,6 +55,18 @@ export async function installDrivers(value: any) {
       await shelljs.exec(`appium driver install ${driverName}`);
     })
   );
+}
+
+export async function runAppiumDoctor() {
+  const { platform } = await inquirer.prompt([
+    {
+      type: 'list',
+      message: 'Source ',
+      name: 'platform',
+      choices: ['android', 'ios', 'dev'],
+    }
+  ]);
+  await shelljs.exec(`${await packageDirectory()}/node_modules/.bin/appium-doctor --${platform}`)
 }
 
 export async function installPlugin() {
