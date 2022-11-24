@@ -7,7 +7,7 @@
 </h1>
 
 # appium-installer
-CLI to installed appium 2.0
+CLI to install appium 2.0
 
 ## Installation 
 
