@@ -3,13 +3,14 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 const run = promisify(exec);
 
-import ora, { Ora } from 'ora';
+import ora from 'ora';
 import { plugins } from './plugin.js';
 const ui = new inquirer.ui.BottomBar();
 // @ts-ignore
 import shelljs from 'shelljs';
 import chalk from 'chalk';
-import { packageDirectory } from 'pkg-dir';
+import path from 'path';
+const __dirname = path.resolve();
 
 export async function installAppiumServer() {
   newLine();
@@ -66,7 +67,8 @@ export async function runAppiumDoctor() {
       choices: ['android', 'ios', 'dev'],
     }
   ]);
-  await shelljs.exec(`${await packageDirectory()}/node_modules/.bin/appium-doctor --${platform}`)
+  const doctorPath = path.join(__dirname + '/node_modules/.bin/appium-doctor');
+  await shelljs.exec(`${doctorPath} --${platform}`)
 }
 
 export async function installPlugin() {

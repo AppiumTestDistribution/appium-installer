@@ -8,7 +8,7 @@ import chalk from 'chalk';
 async function main() {
   ui.log.write(`\n👋 Hello, Appium user ✨\n\n`);
   ui.log.write(`\n\n‼️  BEFORE YOU START:\n\n`);
-  ui.log.write(`🐍 Make sure you have node 16 and above\n\n`);
+  ui.log.write(`🌐 Make sure you have node 16 and above\n\n`);
   const { server } = await inquirer.prompt([
     {
       type: 'confirm',
