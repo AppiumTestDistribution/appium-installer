@@ -10,7 +10,9 @@ const ui = new inquirer.ui.BottomBar();
 import shelljs from 'shelljs';
 import chalk from 'chalk';
 import path from 'path';
-const __dirname = path.resolve();
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export async function installAppiumServer() {
   newLine();
@@ -67,7 +69,7 @@ export async function runAppiumDoctor() {
       choices: ['android', 'ios', 'dev'],
     }
   ]);
-  const doctorPath = path.join(__dirname + '/node_modules/.bin/appium-doctor');
+  const doctorPath = path.join(__dirname + '/../node_modules/.bin/appium-doctor');
   await shelljs.exec(`${doctorPath} --${platform}`)
 }
 
