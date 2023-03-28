@@ -48,9 +48,16 @@ const options: MenuOption[] = [
 ];
 
 async function main() {
+  const nodeMajorVersion = parseInt(process.version.slice(1).split('.')[0], 10);
+  if (nodeMajorVersion < 16) {
+    ui.log.write(`\n👋 Hello, Appium user ✨\n\n`);
+    ui.log.write(`\n‼️  BEFORE YOU START:\n\n`);
+    ui.log.write(`🌐 Make sure you have node 16 and above\n\n`);
+    ui.log.write(`Your current node version is ${process.version}\n\n`);
+    process.exit(1);
+  }
+
   ui.log.write(`\n👋 Hello, Appium user ✨\n\n`);
-  ui.log.write(`\n‼️  BEFORE YOU START:\n\n`);
-  ui.log.write(`🌐 Make sure you have node 16 and above\n\n`);
 
   while (true) {
     const { selectedOption } = await inquirer.prompt([
