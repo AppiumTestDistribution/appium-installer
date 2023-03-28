@@ -7,6 +7,14 @@ import {
   installPlugin,
   runAppiumDoctor,
 } from './serverInstall.js';
+import os from 'os';
+import path from 'path';
+import download from 'download';
+import extract from 'extract-zip';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const ui = new inquirer.ui.BottomBar();
 
@@ -36,6 +44,11 @@ const options: MenuOption[] = [
     name: 'Run Appium Doctor',
     fn: runAppiumDoctor,
     value: 'run-doctor',
+  },
+  {
+    name: 'Install Appium Inspector',
+    fn: installAppiumInspector,
+    value: 'install-inspector',
   },
   {
     name: 'Exit',
@@ -91,6 +104,45 @@ async function installRequiredDrivers() {
   ]);
   await installDrivers(requiredDriverToInstall.drivers);
   ui.log.write('\n');
+}
+
+async function installAppiumInspector() {
+  const platform = os.platform();
+  const arch = os.arch();
+  let inspectorUrl;
+
+  if (platform === 'darwin') {
+    inspectorUrl = `https://github.com/appium/appium-inspector/releases/latest/download/Appium-Inspector-2023.3.1-universal-mac.zip`;
+  } else if (platform === 'win32') {
+    inspectorUrl = `https://github.com/appium/appium-inspector/releases/latest/download/appium-inspector-win32-x64.zip`;
+  } else if (platform === 'linux') {
+    if (arch === 'x64') {
+      inspectorUrl = `https://github.com/appium/appium-inspector/releases/latest/download/appium-inspector-linux-x64.zip`;
+    } else {
+      ui.log.write(`Unsupported architecture: ${arch} for Linux platform\n`);
+      return;
+    }
+  } else {
+    ui.log.write(`Unsupported platform: ${platform}\n`);
+    return;
+  }
+
+  const inspectorFileName = path.basename(inspectorUrl);
+  let inspectorFilePath = path.join(__dirname, inspectorFileName);
+
+  ui.log.write(`Downloading Appium Inspector for ${platform}...\n`);
+  await downloadFile(inspectorUrl, inspectorFilePath);
+  const urlFileName = inspectorUrl.substring(inspectorUrl.lastIndexOf('/') + 1);
+  inspectorFilePath = path.join(__dirname, urlFileName);
+
+  ui.log.write(`Extracting Appium Inspector...\n`);
+  await extract(inspectorFilePath, { dir: __dirname });
+
+  ui.log.write(`Appium Inspector installed successfully\n`);
+}
+
+async function downloadFile(url: string, dest: string) {
+  await download(url, dest, { followRedirect: true });
 }
 
 main();

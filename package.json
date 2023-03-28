@@ -13,6 +13,8 @@
     "@inquirer/checkbox": "^0.0.30-alpha.0",
     "appium-doctor": "^1.16.2",
     "chalk": "^4.1.2",
+    "download": "^8.0.0",
+    "extract-zip": "^2.0.1",
     "inquirer": "^8.2.4",
     "inquirer-fuzzy-path": "^2.3.0",
     "inquirer-search-list": "^1.2.6",
@@ -22,6 +24,7 @@
     "shelljs": "^0.8.5"
   },
   "devDependencies": {
+    "@types/download": "^8.0.2",
     "@types/inquirer": "^9.0.1",
     "@types/inquirer-fuzzy-path": "^2.3.5",
     "@types/lodash": "^4.14.189",
