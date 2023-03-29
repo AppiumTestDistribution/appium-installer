@@ -8,7 +8,6 @@ import {
   installPlugin,
   runAppiumDoctor,
 } from './serverInstall.js';
-import startiOSSimulator from './ios.js';
 
 const ui = new inquirer.ui.BottomBar();
 
