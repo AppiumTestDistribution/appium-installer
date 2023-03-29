@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { startAndroidEmulator } from './android.js';
+import { listEmulators } from './emulators.js';
 import inquirer from 'inquirer';
 import {
   installAppiumServer,
@@ -40,14 +40,9 @@ const options: MenuOption[] = [
     value: 'run-doctor',
   },
   {
-    name: 'Start Android Emulator',
-    fn: startAndroidEmulator,
-    value: 'start-emulator',
-  },
-  {
-    name: 'Start IOS Simulators',
-    fn: startiOSSimulator,
-    value: 'start-ios',
+    name: 'Launch Emulators/Simulators',
+    fn: listEmulators,
+    value: 'run-emulator',
   },
   {
     name: 'Exit',
