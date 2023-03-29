@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { startAndroidEmulator } from './android.js';
 import inquirer from 'inquirer';
 import {
   installAppiumServer,
@@ -7,6 +8,7 @@ import {
   installPlugin,
   runAppiumDoctor,
 } from './serverInstall.js';
+import startiOSSimulator from './ios.js';
 
 const ui = new inquirer.ui.BottomBar();
 
@@ -36,6 +38,16 @@ const options: MenuOption[] = [
     name: 'Run Appium Doctor',
     fn: runAppiumDoctor,
     value: 'run-doctor',
+  },
+  {
+    name: 'Start Android Emulator',
+    fn: startAndroidEmulator,
+    value: 'start-emulator',
+  },
+  {
+    name: 'Start IOS Simulators',
+    fn: startiOSSimulator,
+    value: 'start-ios',
   },
   {
     name: 'Exit',
