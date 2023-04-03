@@ -4,14 +4,14 @@ import util from 'util';
 const execAsync = util.promisify(exec);
 
 export function getAllSimulators() {
-  const simulators: any = [];
+  const simulators = [];
   const devices = JSON.parse(
     execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], { encoding: 'utf8' })
   ).devices;
   Object.keys(devices)
     .filter((version) => version.includes('iOS'))
     .forEach((version) =>
-      devices[version].map((simulator: any) => {
+      devices[version].map((simulator) => {
         if (simulator.isAvailable && simulator.state === 'Shutdown') {
           simulators.push({
             ...simulator,
@@ -24,7 +24,7 @@ export function getAllSimulators() {
   return simulators;
 }
 
-export async function launchSimulator(simulator: any) {
+export async function launchSimulator(simulator) {
   await execAsync(`xcrun simctl boot ${simulator}`);
   await execAsync(`open -a Simulator.app`);
 }

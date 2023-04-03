@@ -10,7 +10,7 @@ export async function getAllEmulators() {
   return emulatorList;
 }
 
-export async function launchEmulator(emulatorID: String) {
+export async function launchEmulator(emulatorID) {
   const androidHome = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
   if (!androidHome) {
     console.log('ANDROID_HOME/ANDROID_SDK_ROOT environment variable is not set');

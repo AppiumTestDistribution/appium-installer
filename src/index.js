@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { listEmulators } from './emulators.js';
+import { listEmulators, androidSetup } from './emulators.js';
 import inquirer from 'inquirer';
 import {
   installAppiumServer,
@@ -8,16 +8,11 @@ import {
   installPlugin,
   runAppiumDoctor,
 } from './serverInstall.js';
+import Logger from './logger.js';
 
-const ui = new inquirer.ui.BottomBar();
+const ui = new Logger().getInstance();
 
-type MenuOption = {
-  name: string;
-  fn: () => Promise<void>;
-  value: string;
-};
-
-const options: MenuOption[] = [
+const options = [
   {
     name: 'Install Appium Server',
     fn: installAppiumServer,
@@ -42,6 +37,11 @@ const options: MenuOption[] = [
     name: 'Launch Emulators/Simulators',
     fn: listEmulators,
     value: 'run-emulator',
+  },
+  {
+    name: 'Android Setup',
+    fn: androidSetup,
+    value: 'android-setup',
   },
   {
     name: 'Exit',
