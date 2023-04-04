@@ -10,6 +10,7 @@ import {
 } from './serverInstall.js';
 import { iOSSetup } from './ios';
 import Logger from './logger.js';
+import chalk from 'chalk';
 
 const ui = new Logger().getInstance();
 
@@ -87,7 +88,7 @@ async function main() {
     }
 
     await currentOption.fn();
-    ui.log.write(`${currentOption.name} completed\n`);
+    ui.log.write(chalk.green(`${currentOption.name} COMPLETED\n`));
   }
 }
 

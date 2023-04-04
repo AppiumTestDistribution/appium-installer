@@ -3,7 +3,7 @@ import util from 'util';
 import { IosSetup, getPlatformName } from '@nightwatch/mobile-helper';
 import Logger from './logger.js';
 import chalk from 'chalk';
-
+import shelljs from 'shelljs'
 const ui = new Logger().getInstance();
 
 const execAsync = util.promisify(exec);
@@ -66,6 +66,7 @@ export async function iOSSetup() {
   const setupConfigs = await iOSSetup.getSetupConfigs(options);
   const missingRequirements = verifySetup(setupConfigs);
   await iOSSetup.setupIos(setupConfigs, missingRequirements);
+  ui.log.write('\n');
 }
 
 function verifySetup(setupConfigs) {
@@ -82,6 +83,12 @@ function verifySetup(setupConfigs) {
     } catch (error) {
       console.log(`  ${chalk.red(symbols().fail)} Xcode is not installed.`);
       missingRequirements.push('Xcode is not installed');
+    }
+    const simulators = getAllSimulators();
+
+    if (simulators.length === 0) {
+      console.log(`  ${chalk.red(symbols().fail)} No valid simulators avaiable.`);
+      missingRequirements.push('No valid simulators avaiable');
     }
   }
 
@@ -108,11 +115,11 @@ function verifySetup(setupConfigs) {
     console.log('\nGreat! All the requirements are being met.');
 
     if (setupConfigs.mode === 'real') {
-      console.log('You can go ahead and run your tests now on your iOS device.');
+      console.log('✅ You can go ahead and run your tests now on your iOS device.');
     } else if (setupConfigs.mode === 'simulator') {
-      console.log('You can go ahead and run your tests now on an iOS simulator.');
+      console.log('✅ You can go ahead and run your tests now on an iOS simulator.');
     } else {
-      console.log('You can go ahead and run your tests now on an iOS device/simulator.');
+      console.log('✅ You can go ahead and run your tests now on an iOS device/simulator.');
     }
   }
 
