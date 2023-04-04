@@ -1,12 +1,16 @@
 import inquirer from 'inquirer';
 import { getAllSimulators, launchSimulator } from './ios.js';
 import { getAllEmulators, launchEmulator } from './android.js';
-import { AndroidSetup } from '@nightwatch/mobile-helper';
+import { AndroidSetup, IosSetup, getPlatformName } from '@nightwatch/mobile-helper';
+import Logger from './logger.js';
+
+const ui = new Logger().getInstance();
 
 export async function androidSetup() {
   const androidSetup = new AndroidSetup();
   await androidSetup.run();
 }
+
 export async function listEmulators() {
   const platform = process.platform;
   let emulatorList, emulatorsOrSimulators, emulatorID;

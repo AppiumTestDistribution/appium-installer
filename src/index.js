@@ -8,11 +8,22 @@ import {
   installPlugin,
   runAppiumDoctor,
 } from './serverInstall.js';
+import { iOSSetup } from './ios';
 import Logger from './logger.js';
 
 const ui = new Logger().getInstance();
 
 const options = [
+  {
+    name: 'Need help setting up Android Environment to run your Appium test?',
+    fn: androidSetup,
+    value: 'android-setup',
+  },
+  {
+    name: 'Need help setting up iOS Environment to run your Appium test?',
+    fn: iOSSetup,
+    value: 'android-setup',
+  },
   {
     name: 'Install Appium Server',
     fn: installAppiumServer,
@@ -37,11 +48,6 @@ const options = [
     name: 'Launch Emulators/Simulators',
     fn: listEmulators,
     value: 'run-emulator',
-  },
-  {
-    name: 'Android Setup',
-    fn: androidSetup,
-    value: 'android-setup',
   },
   {
     name: 'Exit',
