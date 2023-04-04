@@ -1,6 +1,15 @@
 import inquirer from 'inquirer';
 import { getAllSimulators, launchSimulator } from './ios.js';
 import { getAllEmulators, launchEmulator } from './android.js';
+import { AndroidSetup, IosSetup, getPlatformName } from '@nightwatch/mobile-helper';
+import Logger from './logger.js';
+
+const ui = new Logger().getInstance();
+
+export async function androidSetup() {
+  const androidSetup = new AndroidSetup();
+  await androidSetup.run();
+}
 
 export async function listEmulators() {
   const platform = process.platform;
@@ -60,7 +69,7 @@ export async function listEmulators() {
       await launchEmulator(emulatorString);
     } else if (platform === 'darwin' && emulatorsOrSimulators.emusim === 'iOS Simulators') {
       await launchSimulator(
-        emulatorList.find((simulator: { name: any }) => simulator.name === emulatorString).udid
+        emulatorList.find((simulator) => simulator.name === emulatorString).udid
       );
     } else if (platform === 'win32') {
       await launchEmulator(emulatorString);

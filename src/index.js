@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { listEmulators } from './emulators.js';
+import { listEmulators, androidSetup } from './emulators.js';
 import inquirer from 'inquirer';
 import {
   installAppiumServer,
@@ -8,16 +8,23 @@ import {
   installPlugin,
   runAppiumDoctor,
 } from './serverInstall.js';
+import { iOSSetup } from './ios';
+import Logger from './logger.js';
+import chalk from 'chalk';
 
-const ui = new inquirer.ui.BottomBar();
+const ui = new Logger().getInstance();
 
-type MenuOption = {
-  name: string;
-  fn: () => Promise<void>;
-  value: string;
-};
-
-const options: MenuOption[] = [
+const options = [
+  {
+    name: 'Need help setting up Android Environment to run your Appium test?',
+    fn: androidSetup,
+    value: 'android-setup',
+  },
+  {
+    name: 'Need help setting up iOS Environment to run your Appium test?',
+    fn: iOSSetup,
+    value: 'android-setup',
+  },
   {
     name: 'Install Appium Server',
     fn: installAppiumServer,
@@ -81,7 +88,7 @@ async function main() {
     }
 
     await currentOption.fn();
-    ui.log.write(`${currentOption.name} completed\n`);
+    ui.log.write(chalk.green(`${currentOption.name} COMPLETED\n`));
   }
 }
 
