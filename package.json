@@ -1,6 +1,6 @@
 {
   "name": "appium-installer",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "description": "CLI to installed appium 2.0",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
