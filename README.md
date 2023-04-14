@@ -6,8 +6,18 @@
 	<br>
 </h1>
 
+
 # appium-installer
 CLI to install appium 2.0
+
+## Preview 
+<h1 align="left">
+	<br>
+	<img src="assest/demo.gif" alt="AppiumWait2">
+	<br>
+	<br>
+	<br>
+</h1>
 
 ## Installation 
 
