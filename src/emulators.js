@@ -1,10 +1,7 @@
 import inquirer from 'inquirer';
 import { getAllSimulators, launchSimulator } from './ios.js';
 import { getAllEmulators, launchEmulator } from './android.js';
-import { AndroidSetup, IosSetup, getPlatformName } from '@nightwatch/mobile-helper';
-import Logger from './logger.js';
-
-const ui = new Logger().getInstance();
+import { AndroidSetup } from '@nightwatch/mobile-helper';
 
 export async function androidSetup() {
   const androidSetup = new AndroidSetup();

@@ -1,13 +1,28 @@
-import { exec, spawn } from 'child_process';
+import {exec, spawn} from 'child_process';
 import util from 'util';
 import path from 'path';
+import fs from 'fs';
+import Logger from './logger.js';
+import {AndroidSetup} from "@nightwatch/mobile-helper";
+
+const ui = new Logger().getInstance();
 
 const execAsync = util.promisify(exec);
 
+function getEmulatorLocation() {
+  const androidHome = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
+  return path.join(androidHome, 'emulator', 'emulator');
+}
+
 export async function getAllEmulators() {
-  const { stdout } = await execAsync('emulator -list-avds');
-  const emulatorList = stdout.split('\n');
-  return emulatorList;
+  const emulatorCmd = getEmulatorLocation();
+  if (!fs.existsSync(emulatorCmd)) {
+      ui.log.write('Found missing dependency for Android...\n');
+      let androidSetup = new AndroidSetup();
+      await androidSetup.run();
+  }
+  const { stdout } = await execAsync(`${emulatorCmd} -list-avds`);
+  return stdout.split('\n');
 }
 
 export async function launchEmulator(emulatorID) {
@@ -17,6 +32,5 @@ export async function launchEmulator(emulatorID) {
     return;
   }
 
-  const emulatorCmd = path.join(androidHome, 'emulator', 'emulator');
-  spawn(`${emulatorCmd}`, ['-avd', `${emulatorID}`]);
+  spawn(`${getEmulatorLocation()}`, ['-avd', `${emulatorID}`]);
 }
