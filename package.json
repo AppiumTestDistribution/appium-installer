@@ -10,10 +10,10 @@
     "prettier": "prettier 'src/**/*.ts' --write --single-quote"
   },
   "dependencies": {
+    "@appium/doctor": "^2.0.14",
     "@inquirer/checkbox": "^0.0.30-alpha.0",
     "@nightwatch/mobile-helper": "^0.1.12",
     "appium-adb": "^9.10.24",
-    "appium-doctor": "^1.16.2",
     "chalk": "^4.1.2",
     "inquirer": "^8.2.4",
     "inquirer-fuzzy-path": "^2.3.0",
