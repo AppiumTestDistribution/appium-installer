@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 
 import ora from 'ora';
-import { plugins } from './plugin.js';
+import {plugins} from './plugin.js';
 import Logger from './logger.js';
 
 const ui = new Logger().getInstance();
@@ -11,49 +11,49 @@ import chalk from 'chalk';
 import path from 'path';
 
 export async function installAppiumServer() {
-  newLine();
-  const spinner = ora('Installing Appium Server').start();
-  try {
-    shelljs.exec('npm install -g appium@next');
-    const { stdout } = shelljs.exec('appium -v');
-    spinner.succeed(`💥 💥 💥 Successfully installed server version ${stdout}`);
-  } catch (err) {
-    spinner.fail(err);
-    throw new Error(err);
-  } finally {
-    spinner.stop();
-  }
-  ui.log.write('\n');
+    newLine();
+    const spinner = ora('Installing Appium Server').start();
+    try {
+        shelljs.exec('npm install -g appium@latest');
+        const {stdout} = shelljs.exec('appium -v');
+        spinner.succeed(`💥 💥 💥 Successfully installed server version ${stdout}`);
+    } catch (err) {
+        spinner.fail(err);
+        throw new Error(err);
+    } finally {
+        spinner.stop();
+    }
+    ui.log.write('\n');
 }
 
 function newLine() {
-  ui.log.write('\n');
+    ui.log.write('\n');
 }
 
 export async function getDriver() {
-  newLine();
-  let drivers = [];
-  const spinner = ora('Fetching available official drivers').start();
+    newLine();
+    let drivers = [];
+    const spinner = ora('Fetching available official drivers').start();
 
-  try {
-    const { stdout } = shelljs.exec('appium driver list --json');
-    Object.keys(JSON.parse(stdout)).forEach((value) => drivers.push({ name: value }));
-    spinner.succeed();
-    return drivers;
-  } catch (err) {
-    spinner.fail(err);
-    spinner.stop();
-  } finally {
-    spinner.stop();
-  }
+    try {
+        const {stdout} = shelljs.exec('appium driver list --json');
+        Object.keys(JSON.parse(stdout)).forEach((value) => drivers.push({name: value}));
+        spinner.succeed();
+        return drivers;
+    } catch (err) {
+        spinner.fail(err);
+        spinner.stop();
+    } finally {
+        spinner.stop();
+    }
 }
 
 export async function installDrivers(value) {
-  await Promise.all(
-    value.map(async (driverName) => {
-      shelljs.exec(`appium driver install ${driverName}`);
-    })
-  );
+    await Promise.all(
+        value.map(async (driverName) => {
+            shelljs.exec(`appium driver install ${driverName}`);
+        })
+    );
 }
 
 export async function runAppiumDoctor() {
