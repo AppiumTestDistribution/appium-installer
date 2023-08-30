@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { startAndroidEmulator } from './android.js';
+import { listEmulators, androidSetup } from './emulators.js';
 import inquirer from 'inquirer';
 import {
   installAppiumServer,
@@ -8,17 +8,23 @@ import {
   installPlugin,
   runAppiumDoctor,
 } from './serverInstall.js';
-import startiOSSimulator from './ios.js';
+import { iOSSetup } from './ios';
+import Logger from './logger.js';
+import chalk from 'chalk';
 
-const ui = new inquirer.ui.BottomBar();
+const ui = new Logger().getInstance();
 
-type MenuOption = {
-  name: string;
-  fn: () => Promise<void>;
-  value: string;
-};
-
-const options: MenuOption[] = [
+const options = [
+  {
+    name: 'Need help setting up Android Environment to run your Appium test?',
+    fn: androidSetup,
+    value: 'android-setup',
+  },
+  {
+    name: 'Need help setting up iOS Environment to run your Appium test?',
+    fn: iOSSetup,
+    value: 'android-setup',
+  },
   {
     name: 'Install Appium Server',
     fn: installAppiumServer,
@@ -40,14 +46,9 @@ const options: MenuOption[] = [
     value: 'run-doctor',
   },
   {
-    name: 'Start Android Emulator',
-    fn: startAndroidEmulator,
-    value: 'start-emulator',
-  },
-  {
-    name: 'Start IOS Simulators',
-    fn: startiOSSimulator,
-    value: 'start-ios',
+    name: 'Launch Emulators/Simulators',
+    fn: listEmulators,
+    value: 'run-emulator',
   },
   {
     name: 'Exit',
@@ -87,7 +88,7 @@ async function main() {
     }
 
     await currentOption.fn();
-    ui.log.write(`${currentOption.name} completed\n`);
+    ui.log.write(chalk.green(`${currentOption.name} COMPLETED\n`));
   }
 }
 

@@ -1,27 +1,23 @@
 import inquirer from 'inquirer';
-import { promisify } from 'util';
-import { exec } from 'child_process';
-const run = promisify(exec);
 
 import ora from 'ora';
 import { plugins } from './plugin.js';
-const ui = new inquirer.ui.BottomBar();
+import Logger from './logger.js';
+
+const ui = new Logger().getInstance();
 // @ts-ignore
 import shelljs from 'shelljs';
 import chalk from 'chalk';
 import path from 'path';
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export async function installAppiumServer() {
   newLine();
   const spinner = ora('Installing Appium Server').start();
   try {
-    await run('npm install -g appium@next');
-    const { stdout } = await run('appium -v');
+    shelljs.exec('npm install -g appium@next');
+    const { stdout } = shelljs.exec('appium -v');
     spinner.succeed(`💥 💥 💥 Successfully installed server version ${stdout}`);
-  } catch (err: any) {
+  } catch (err) {
     spinner.fail(err);
     throw new Error(err);
   } finally {
@@ -36,15 +32,15 @@ function newLine() {
 
 export async function getDriver() {
   newLine();
-  let drivers: { name: string }[] = [];
+  let drivers = [];
   const spinner = ora('Fetching available official drivers').start();
 
   try {
-    const { stdout } = await run('appium driver list --json');
+    const { stdout } = shelljs.exec('appium driver list --json');
     Object.keys(JSON.parse(stdout)).forEach((value) => drivers.push({ name: value }));
     spinner.succeed();
     return drivers;
-  } catch (err: any) {
+  } catch (err) {
     spinner.fail(err);
     spinner.stop();
   } finally {
@@ -52,10 +48,10 @@ export async function getDriver() {
   }
 }
 
-export async function installDrivers(value: any) {
+export async function installDrivers(value) {
   await Promise.all(
-    value.map(async (driverName: string) => {
-      await shelljs.exec(`appium driver install ${driverName}`);
+    value.map(async (driverName) => {
+      shelljs.exec(`appium driver install ${driverName}`);
     })
   );
 }
@@ -64,13 +60,12 @@ export async function runAppiumDoctor() {
   const { platform } = await inquirer.prompt([
     {
       type: 'list',
-      message: 'Source ',
       name: 'platform',
       choices: ['android', 'ios', 'dev'],
     },
   ]);
   const doctorPath = path.join(__dirname + '/../node_modules/.bin/appium-doctor');
-  await shelljs.exec(`${doctorPath} --${platform}`);
+  shelljs.exec(`${doctorPath} --${platform}`);
 }
 
 export async function installPlugin() {
@@ -96,7 +91,7 @@ export async function installPlugin() {
       choices: ['npm', 'github', 'git', 'local'],
     },
   ]);
-  let pluginPath: string;
+  let pluginPath;
   if (source != 'npm') {
     const path = await inquirer.prompt([
       {
@@ -107,17 +102,15 @@ export async function installPlugin() {
     pluginPath = path.pluginPath;
   }
 
-  const installedPlugins = await shelljs.exec('appium plugin list --installed --json', {
-    silent: true,
-  });
+  const installedPlugins = shelljs.exec('appium plugin list --installed --json', { silent: true });
   let pluginNamesInstalled = Object.entries(JSON.parse(installedPlugins.stdout));
-  let pluginInformation: { pluginName: string; plugin: any; installed: any }[] = [];
+  let pluginInformation = [];
   pluginNamesInstalled.map(([key, val]) => {
     // @ts-ignore
     pluginInformation.push({ pluginName: key, plugin: val.pkgName, installed: val.installed });
   });
   await Promise.all(
-    requiredPlugins.plugins.map(async (pluginName: string) => {
+    requiredPlugins.plugins.map(async (pluginName) => {
       newLine();
       const pluginExists = pluginInformation.find((name) => name.plugin === pluginName);
       if (pluginExists != undefined) {
@@ -125,15 +118,13 @@ export async function installPlugin() {
         newLine();
         ui.log.write(chalk.yellow(`ℹ️  Checking if any update available for plugin ${pluginName}`));
         newLine();
-        await shelljs.exec(`appium plugin update ${pluginExists.pluginName}`);
+        shelljs.exec(`appium plugin update ${pluginExists.pluginName}`);
         return;
       } else {
         if (!pluginPath) {
-          await shelljs.exec(`appium plugin install --source ${source} ${pluginName}`);
+          shelljs.exec(`appium plugin install --source ${source} ${pluginName}`);
         } else {
-          await shelljs.exec(
-            `appium plugin install --source ${source} --package ${pluginPath} plugin`
-          );
+          shelljs.exec(`appium plugin install --source ${source} --package ${pluginPath} plugin`);
         }
       }
     })
