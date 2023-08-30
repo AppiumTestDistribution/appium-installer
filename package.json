@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rimraf coverage dist .tmp",
     "compile": "babel src/ -d dist/",
-    "prettier": "prettier 'src/**/*.ts' --write --single-quote"
+    "prettier": "prettier 'src/**/*.js' --write --single-quote"
   },
   "dependencies": {
     "@inquirer/checkbox": "^0.0.30-alpha.0",

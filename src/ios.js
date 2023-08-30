@@ -3,7 +3,7 @@ import util from 'util';
 import { IosSetup, getPlatformName } from '@nightwatch/mobile-helper';
 import Logger from './logger.js';
 import chalk from 'chalk';
-import shelljs from 'shelljs'
+import shelljs from 'shelljs';
 const ui = new Logger().getInstance();
 
 const execAsync = util.promisify(exec);
@@ -45,7 +45,7 @@ export const symbols = () => {
 
   return {
     ok: ok,
-    fail: fail
+    fail: fail,
   };
 };
 
@@ -56,8 +56,8 @@ export async function iOSSetup() {
     i: false,
     help: false,
     h: false,
-    appium: false
-  }
+    appium: false,
+  };
   const iOSSetup = new IosSetup(options);
   if (getPlatformName() != 'mac') {
     ui.log.write('Only macOS is supported');
@@ -77,7 +77,7 @@ function verifySetup(setupConfigs) {
 
     try {
       execSync('/usr/bin/xcodebuild -version', {
-        stdio: 'pipe'
+        stdio: 'pipe',
       });
       console.log(`  ${chalk.green(symbols().ok)} Xcode is installed in your machine\n`);
     } catch (error) {
@@ -97,21 +97,23 @@ function verifySetup(setupConfigs) {
 
     try {
       // eslint-disable-next-line
-      const stdout = execSync("system_profiler SPUSBDataType | sed -n '/iPhone/,/Serial/p' | grep 'Serial Number:' | awk -F ': ' '{print $2}'", {
-        stdio: 'pipe'
-      });
+      const stdout = execSync(
+        "system_profiler SPUSBDataType | sed -n '/iPhone/,/Serial/p' | grep 'Serial Number:' | awk -F ': ' '{print $2}'",
+        {
+          stdio: 'pipe',
+        }
+      );
 
       if (stdout.toString() == '') {
         console.log(`  ${chalk.red(symbols().fail)} Device is either not connected or turned off.`);
         missingRequirements.push('Device is not connected');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
   if (missingRequirements.length === 0) {
-
     console.log('\nGreat! All the requirements are being met.');
 
     if (setupConfigs.mode === 'real') {

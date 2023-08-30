@@ -62,10 +62,10 @@ export async function runAppiumDoctor() {
       type: 'list',
       name: 'platform',
       choices: ['android', 'ios', 'dev'],
-    }
+    },
   ]);
   const doctorPath = path.join(__dirname + '/../node_modules/.bin/appium-doctor');
-  shelljs.exec(`${doctorPath} --${platform}`)
+  shelljs.exec(`${doctorPath} --${platform}`);
 }
 
 export async function installPlugin() {
@@ -89,46 +89,44 @@ export async function installPlugin() {
       message: 'Source ',
       name: 'source',
       choices: ['npm', 'github', 'git', 'local'],
-    }
+    },
   ]);
   let pluginPath;
-  if (source!= 'npm') {
-    const path = await inquirer
-        .prompt([
-          {
-            name: 'pluginPath',
-            message: 'Source of plugin',
-          },
-        ])
+  if (source != 'npm') {
+    const path = await inquirer.prompt([
+      {
+        name: 'pluginPath',
+        message: 'Source of plugin',
+      },
+    ]);
     pluginPath = path.pluginPath;
   }
 
   const installedPlugins = shelljs.exec('appium plugin list --installed --json', { silent: true });
   let pluginNamesInstalled = Object.entries(JSON.parse(installedPlugins.stdout));
   let pluginInformation = [];
-  pluginNamesInstalled.map( ([key, val]) => {
+  pluginNamesInstalled.map(([key, val]) => {
     // @ts-ignore
-    pluginInformation.push({pluginName: key, plugin: val.pkgName, installed: val.installed});
+    pluginInformation.push({ pluginName: key, plugin: val.pkgName, installed: val.installed });
   });
   await Promise.all(
-      requiredPlugins.plugins.map(async (pluginName) => {
+    requiredPlugins.plugins.map(async (pluginName) => {
+      newLine();
+      const pluginExists = pluginInformation.find((name) => name.plugin === pluginName);
+      if (pluginExists != undefined) {
+        ui.log.write(chalk.yellow(`ℹ️  Plugin ${pluginName} already installed`));
         newLine();
-        const pluginExists = pluginInformation.find(name => name.plugin === pluginName);
-        if(pluginExists != undefined) {
-            ui.log.write(chalk.yellow(`ℹ️  Plugin ${pluginName} already installed`));
-            newLine();
-            ui.log.write(chalk.yellow(`ℹ️  Checking if any update available for plugin ${pluginName}`));
-            newLine();
-            shelljs.exec(`appium plugin update ${pluginExists.pluginName}`);
-            return;
-          } else {
-          if (!pluginPath) {
-            shelljs.exec(`appium plugin install --source ${source} ${pluginName}`);
-          } else {
-            shelljs.exec(`appium plugin install --source ${source} --package ${pluginPath} plugin`);
-          }
+        ui.log.write(chalk.yellow(`ℹ️  Checking if any update available for plugin ${pluginName}`));
+        newLine();
+        shelljs.exec(`appium plugin update ${pluginExists.pluginName}`);
+        return;
+      } else {
+        if (!pluginPath) {
+          shelljs.exec(`appium plugin install --source ${source} ${pluginName}`);
+        } else {
+          shelljs.exec(`appium plugin install --source ${source} --package ${pluginPath} plugin`);
         }
-      })
+      }
+    })
   );
-
 }
