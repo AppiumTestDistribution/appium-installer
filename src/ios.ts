@@ -45,12 +45,12 @@ function getAllSimulators() {
     .filter((version) => version.includes('iOS'))
     .forEach((version) =>
       devices[version].map((simulator: any) => {
-        if (simulator.isAvailable) {
-          simulators.push({
-            ...simulator,
-            name: `${simulator.name} ${version.split('-')[1]}.${version.split('-')[2]}`,
-            version: version.split(' ')[1],
-          });
+        if(simulator.isAvailable) {
+            simulators.push({
+                ...simulator,
+                name: `${simulator.name} ${version.split('-')[1]}.${version.split('-')[2]}`,
+                version: version.split(' ')[1],
+              });
         }
       })
     );
