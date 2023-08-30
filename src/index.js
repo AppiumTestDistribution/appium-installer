@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {listEmulators, androidSetup} from './emulators.js';
+import { listEmulators, androidSetup } from './emulators.js';
 import inquirer from 'inquirer';
 import {
     installAppiumServer,
@@ -8,7 +8,7 @@ import {
     installPlugin,
     runAppiumDoctor,
 } from './serverInstall.js';
-import {iOSSetup} from './ios';
+import { iOSSetup } from './ios';
 import Logger from './logger.js';
 import chalk from 'chalk';
 
@@ -73,7 +73,7 @@ async function main() {
     ui.log.write(`\n👋 Hello, Appium user ✨\n\n`);
 
     while (true) {
-        const {selectedOption} = await inquirer.prompt([
+        const { selectedOption } = await inquirer.prompt([
             {
                 type: 'list',
                 name: 'selectedOption',
