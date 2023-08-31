@@ -14,7 +14,7 @@ export async function installAppiumServer() {
   newLine();
   const spinner = ora('Installing Appium Server').start();
   try {
-    shelljs.exec('npm install -g appium@next');
+    shelljs.exec('npm install -g appium@latest');
     const { stdout } = shelljs.exec('appium -v');
     spinner.succeed(`💥 💥 💥 Successfully installed server version ${stdout}`);
   } catch (err) {
@@ -92,7 +92,7 @@ export async function installPlugin() {
     },
   ]);
   let pluginPath;
-  if (source != 'npm') {
+  if (source !== 'npm') {
     const path = await inquirer.prompt([
       {
         name: 'pluginPath',
@@ -113,7 +113,7 @@ export async function installPlugin() {
     requiredPlugins.plugins.map(async (pluginName) => {
       newLine();
       const pluginExists = pluginInformation.find((name) => name.plugin === pluginName);
-      if (pluginExists != undefined) {
+      if (pluginExists !== undefined) {
         ui.log.write(chalk.yellow(`ℹ️  Plugin ${pluginName} already installed`));
         newLine();
         ui.log.write(chalk.yellow(`ℹ️  Checking if any update available for plugin ${pluginName}`));
