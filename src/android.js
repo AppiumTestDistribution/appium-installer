@@ -6,8 +6,7 @@ const execAsync = util.promisify(exec);
 
 export async function getAllEmulators() {
   const { stdout } = await execAsync('emulator -list-avds');
-  const emulatorList = stdout.split('\n');
-  return emulatorList;
+  return stdout.split('\n');
 }
 
 export async function launchEmulator(emulatorID) {

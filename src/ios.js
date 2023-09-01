@@ -3,7 +3,7 @@ import util from 'util';
 import { IosSetup, getPlatformName } from '@nightwatch/mobile-helper';
 import Logger from './logger.js';
 import chalk from 'chalk';
-import shelljs from 'shelljs';
+
 const ui = new Logger().getInstance();
 
 const execAsync = util.promisify(exec);
@@ -59,7 +59,7 @@ export async function iOSSetup() {
     appium: false,
   };
   const iOSSetup = new IosSetup(options);
-  if (getPlatformName() != 'mac') {
+  if (getPlatformName() !== 'mac') {
     ui.log.write('Only macOS is supported');
     return false;
   }
@@ -104,7 +104,7 @@ function verifySetup(setupConfigs) {
         }
       );
 
-      if (stdout.toString() == '') {
+      if (stdout.toString() === '') {
         console.log(`  ${chalk.red(symbols().fail)} Device is either not connected or turned off.`);
         missingRequirements.push('Device is not connected');
       }
