@@ -119,6 +119,7 @@ export async function installPlugin() {
         ui.log.write(chalk.yellow(`ℹ️  Checking if any update available for plugin ${pluginName}`));
         newLine();
         shelljs.exec(`appium plugin update ${pluginExists.pluginName}`);
+        return;
       } else {
         if (!pluginPath) {
           shelljs.exec(`appium plugin install --source ${source} ${pluginName}`);
