@@ -94,15 +94,23 @@ async function main() {
 
 async function installRequiredDrivers() {
   const driverChoices = await getDriver();
-  const requiredDriverToInstall = await inquirer.prompt([
-    {
-      type: 'checkbox',
-      message: 'Select Drivers to install',
-      name: 'drivers',
-      choices: driverChoices,
-    },
-  ]);
-  await installDrivers(requiredDriverToInstall.drivers);
+  await inquirer
+    .prompt([
+      {
+        type: 'checkbox',
+        message: 'Select Drivers to install',
+        name: 'drivers',
+        choices: driverChoices,
+      },
+    ])
+    .then(async (answers) => {
+      for (const value of answers.drivers) {
+        await installDrivers(value);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   ui.log.write('\n');
 }
 
