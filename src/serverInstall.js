@@ -158,7 +158,7 @@ async function appiumDriverInstallChoice(driverVersion, driverName) {
         break;
     }
 
-    shelljs
+    await shelljs
       .exec(`${driverStr}`, {
         silent: true,
       })
