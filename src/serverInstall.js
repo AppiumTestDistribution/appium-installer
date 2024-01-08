@@ -10,11 +10,66 @@ import shelljs from 'shelljs';
 import chalk from 'chalk';
 import path from 'path';
 
+async function validateAndInstallUserSelectedServerVersion() {
+  const { enteredVersion } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'enteredVersion',
+      message: 'Enter your Server version number: ',
+    },
+  ]);
+
+  shelljs
+    .exec(`npm view 'appium@*' versions`, {
+      silent: true,
+    })
+    .includes(enteredVersion)
+    ? await installAppiumServerWithVersion(enteredVersion)
+    : await retryAppiumServerInstall();
+}
+
+async function retryAppiumServerInstall() {
+  newLine();
+  ui.log.write(chalk.red(`Please try again with a valid version number...`));
+  await installAppiumServer();
+}
+
 export async function installAppiumServer() {
   newLine();
+
+  const options = [
+    {
+      name: 'Select latest Server version: ',
+      fn: installAppiumServerWithVersion,
+      value: 1,
+    },
+    {
+      name: 'Select custom Server version: ',
+      fn: validateAndInstallUserSelectedServerVersion,
+      value: 2,
+    },
+  ];
+
+  const { selectedChoice } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'selectedChoice',
+      message: 'Choose your version: ',
+      choices: options.map((option) => option.name),
+    },
+  ]);
+
+  const currentOption = options.find((option) => option.name === selectedChoice);
+
+  currentOption.value === 1 ? await currentOption.fn('latest') : await currentOption.fn();
+
+  ui.log.write('\n');
+}
+
+async function installAppiumServerWithVersion(selectedVersion) {
   const spinner = ora('Installing Appium Server').start();
   try {
-    shelljs.exec('npm install -g appium@latest');
+    shelljs.exec(`npm install -g appium@${selectedVersion}`);
     const { stdout } = shelljs.exec('appium -v');
     spinner.succeed(`💥 💥 💥 Successfully installed server version ${stdout}`);
   } catch (err) {
@@ -23,11 +78,7 @@ export async function installAppiumServer() {
   } finally {
     spinner.stop();
   }
-  ui.log.write('\n');
-}
-
-function newLine() {
-  ui.log.write('\n');
+  newLine();
 }
 
 export async function getDriver() {
@@ -48,12 +99,84 @@ export async function getDriver() {
   }
 }
 
-export async function installDrivers(value) {
-  await Promise.all(
-    value.map(async (driverName) => {
-      shelljs.exec(`appium driver install ${driverName}`);
-    })
-  );
+export async function installDrivers(driverName) {
+  newLine();
+
+  const driverVersion = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      message: `Install ${driverName} driver version`,
+      name: 'drivers',
+      choices: ['latest', 'custom'],
+    },
+  ]);
+
+  await appiumDriverInstallChoice(driverVersion, driverName);
+}
+
+async function appiumDriverInstallChoice(driverVersion, driverName) {
+  if (driverVersion.drivers[0] === 'latest') {
+    console.log(`Installing latest ${driverName} driver...`);
+    await shelljs.exec(`appium driver uninstall ${driverName}`);
+    await shelljs.exec(`appium driver install ${driverName}`);
+  }
+  if (driverVersion.drivers[0] === 'custom') {
+    console.log(`Installing custom ${driverName} driver...`);
+    const { enteredVersion } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'enteredVersion',
+        message: `Enter the ${driverName} version number: `,
+      },
+    ]);
+
+    let driverStr = null;
+    const driverStrFirst = "npm view 'appium";
+    const driverStrSecond = "driver@*' versions";
+
+    switch (driverName) {
+      case 'espresso':
+        driverStr = driverStrFirst + '-espresso-' + driverStrSecond;
+        break;
+      case 'uiautomator2':
+        driverStr = driverStrFirst + '-uiautomator2-' + driverStrSecond;
+        break;
+      case 'mac2':
+        driverStr = driverStrFirst + '-mac2-' + driverStrSecond;
+        break;
+      case 'gecko':
+        driverStr = driverStrFirst + '-gecko' + driverStrSecond;
+        break;
+      case 'chromium':
+        driverStr = driverStrFirst + '-chromium-' + driverStrSecond;
+        break;
+      case 'safari':
+        driverStr = driverStrFirst + '-safari-' + driverStrSecond;
+        break;
+      case 'xcuitest':
+        driverStr = driverStrFirst + '-xcuitest-' + driverStrSecond;
+        break;
+    }
+
+    shelljs
+      .exec(`${driverStr}`, {
+        silent: true,
+      })
+      .includes(enteredVersion)
+      ? await installSelectedDriverWithSpecificVersion(driverName, enteredVersion)
+      : await retrySelectedDriverInstall(driverName);
+  }
+}
+
+async function installSelectedDriverWithSpecificVersion(driverName, enteredVersion) {
+  await shelljs.exec(`appium driver uninstall ${driverName}`);
+  await shelljs.exec(`appium driver install ${driverName}@${enteredVersion}`);
+}
+
+async function retrySelectedDriverInstall(driverName) {
+  newLine();
+  ui.log.write(chalk.red(`Please try again with a valid version number...`));
+  await installDrivers(driverName);
 }
 
 export async function runAppiumDoctor() {
@@ -129,4 +252,8 @@ export async function installPlugin() {
       }
     })
   );
+}
+
+function newLine() {
+  ui.log.write('\n');
 }
