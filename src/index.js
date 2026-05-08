@@ -9,86 +9,154 @@ import {
   runAppiumDoctor,
 } from './serverInstall.js';
 import { iOSSetup } from './ios';
+import { showEnvironmentStatus } from './statusDashboard.js';
+import { checkForUpdates } from './updateChecker.js';
+import { manageDevices } from './deviceManager.js';
+import { runSetupProfile } from './setupProfiles.js';
 import Logger from './logger.js';
 import chalk from 'chalk';
 
 const ui = new Logger().getInstance();
 
+const BANNER = `
+${chalk.cyan('    ╔═╗ ╔═╗ ╔═╗ ╦ ╦ ╔╦╗')}
+${chalk.cyan('    ╠═╣ ╠═╝ ╠═╝ ║ ║ ║║║')}
+${chalk.cyan('    ╩ ╩ ╩   ╩   ╩ ╚═╝╩ ╩')}
+${chalk.magenta('    ╦ ╔╗╔ ╔═╗ ╔╦╗ ╔═╗ ╦  ╦  ╔═╗ ╦═╗')}
+${chalk.magenta('    ║ ║║║ ╚═╗  ║  ╠═╣ ║  ║  ║╣  ╠╦╝')}
+${chalk.magenta('    ╩ ╝╚╝ ╚═╝  ╩  ╩ ╩ ╩═╝╩═╝╚═╝ ╩╚═')}
+
+  ${chalk.bold.white('Appium Installer')} ${chalk.dim('v3.0.0')} ${chalk.dim('│')} ${chalk.dim('Your one-stop shop for Appium 2.0')}
+  ${chalk.dim('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')}
+`;
+
+const tips = [
+  '💡 Tip: Use "Quick Setup Profiles" to get started in seconds!',
+  '💡 Tip: "Show Environment Status" gives you a full health check.',
+  '💡 Tip: "Check for Updates" keeps your drivers & plugins fresh.',
+  '💡 Tip: "Device Manager" lets you launch & shutdown devices easily.',
+  '💡 Tip: Run "Appium Doctor" to diagnose environment issues.',
+];
+
 const options = [
   {
-    name: 'Need help setting up Android Environment to run your Appium test?',
+    name: `${chalk.green('🤖')}  Setup Android Environment`,
     fn: androidSetup,
     value: 'android-setup',
   },
   {
-    name: 'Need help setting up iOS Environment to run your Appium test?',
+    name: `${chalk.white('🍎')}  Setup iOS Environment`,
     fn: iOSSetup,
-    value: 'android-setup',
+    value: 'ios-setup',
   },
   {
-    name: 'Install Appium Server',
+    name: `${chalk.yellow('⚡')}  Quick Setup Profiles`,
+    fn: runSetupProfile,
+    value: 'setup-profiles',
+  },
+  new inquirer.Separator(' '),
+  new inquirer.Separator(chalk.dim('   ────── Install & Configure ──────')),
+  new inquirer.Separator(' '),
+  {
+    name: `${chalk.cyan('📦')}  Install Appium Server`,
     fn: installAppiumServer,
     value: 'install-server',
   },
   {
-    name: 'Install Appium Drivers',
+    name: `${chalk.cyan('🔌')}  Install Appium Drivers`,
     fn: installRequiredDrivers,
     value: 'install-drivers',
   },
   {
-    name: 'Install Appium Plugin',
+    name: `${chalk.cyan('🧩')}  Install Appium Plugins`,
     fn: installPlugin,
     value: 'install-plugin',
   },
+  new inquirer.Separator(' '),
+  new inquirer.Separator(chalk.dim('   ────── Diagnostics & Tools ──────')),
+  new inquirer.Separator(' '),
   {
-    name: 'Run Appium Doctor',
+    name: `${chalk.green('🩺')}  Run Appium Doctor`,
     fn: runAppiumDoctor,
     value: 'run-doctor',
   },
   {
-    name: 'Launch Emulators/Simulators',
+    name: `${chalk.blue('📊')}  Show Environment Status`,
+    fn: showEnvironmentStatus,
+    value: 'env-status',
+  },
+  {
+    name: `${chalk.yellow('🔄')}  Check for Updates`,
+    fn: checkForUpdates,
+    value: 'check-updates',
+  },
+  new inquirer.Separator(' '),
+  new inquirer.Separator(chalk.dim('   ────── Devices ─────────────────')),
+  new inquirer.Separator(' '),
+  {
+    name: `${chalk.magenta('🚀')}  Launch Emulators/Simulators`,
     fn: listEmulators,
     value: 'run-emulator',
   },
   {
-    name: 'Exit',
+    name: `${chalk.magenta('📱')}  Device Manager`,
+    fn: manageDevices,
+    value: 'device-manager',
+  },
+  new inquirer.Separator(' '),
+  new inquirer.Separator(chalk.dim('   ─────────────────────────────────')),
+  new inquirer.Separator(' '),
+  {
+    name: `${chalk.red('👋')}  Exit`,
     fn: async () => {
-      ui.log.write('Exiting Appium Installer...\n');
+      ui.log.write(chalk.dim('\n  Thanks for using Appium Installer. Happy testing! 🎉\n'));
       process.exit(0);
     },
     value: 'exit',
   },
 ];
 
+const menuChoices = options.filter((o) => !(o instanceof inquirer.Separator));
+
 async function main() {
   const nodeMajorVersion = parseInt(process.version.slice(1).split('.')[0], 10);
   if (nodeMajorVersion < 16) {
-    ui.log.write(`\n👋 Hello, Appium user ✨\n\n`);
-    ui.log.write(`\n‼️  BEFORE YOU START:\n\n`);
-    ui.log.write(`🌐 Make sure you have node 16 and above\n\n`);
-    ui.log.write(`Your current node version is ${process.version}\n\n`);
+    ui.log.write(BANNER);
+    ui.log.write(chalk.red.bold('  ⛔ Node.js 16+ is required\n'));
+    ui.log.write(chalk.red(`  Your version: ${process.version}\n`));
+    ui.log.write(chalk.dim('  Upgrade Node.js and try again.\n'));
     process.exit(1);
   }
 
-  ui.log.write(`\n👋 Hello, Appium user ✨\n\n`);
+  ui.log.write(BANNER);
+  const tip = tips[Math.floor(Math.random() * tips.length)];
+  ui.log.write(chalk.dim(`  ${tip}\n`));
 
   while (true) {
     const { selectedOption } = await inquirer.prompt([
       {
         type: 'list',
         name: 'selectedOption',
-        message: 'Select an option',
-        choices: options.map((option) => option.name),
+        message: chalk.bold.white('What would you like to do?'),
+        choices: options,
+        pageSize: 20,
       },
     ]);
 
-    const currentOption = options.find((option) => option.name === selectedOption);
+    const currentOption = menuChoices.find(
+      (option) => option.value === selectedOption || option.name === selectedOption
+    );
     if (!currentOption) {
       throw new Error(`Invalid menu option selected: ${selectedOption}`);
     }
 
+    ui.log.write('');
     await currentOption.fn();
-    ui.log.write(chalk.green(`${currentOption.name} COMPLETED\n`));
+    if (currentOption.value !== 'exit') {
+      ui.log.write(
+        chalk.green.bold(`\n  ✅ ${currentOption.name.replace(/^.*?\s/, '')} — Done!\n`)
+      );
+    }
   }
 }
 

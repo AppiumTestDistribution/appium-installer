@@ -66,7 +66,7 @@ export async function installAppiumServer() {
   ui.log.write('\n');
 }
 
-async function installAppiumServerWithVersion(selectedVersion) {
+export async function installAppiumServerWithVersion(selectedVersion) {
   const spinner = ora('Installing Appium Server').start();
   try {
     shelljs.exec(`npm install -g appium@${selectedVersion}`);
